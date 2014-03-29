@@ -46,14 +46,14 @@ define([
   'js/patterns/structure/views/textfilter',
   'js/patterns/structure/collections/result',
   'js/patterns/structure/collections/selected',
-  'mockup-patterns-dropzone',
+  'mockup-patterns-upload',
   'mockup-utils',
   'jquery.cookie'
 ], function($, _, Backbone, Toolbar, ButtonGroup, ButtonView, BaseView,
             TableView, SelectionWellView, TagsView, PropertiesView,
             WorkflowView, DeleteView, RenameView, RearrangeView, SelectionButtonView,
             PagingView, AddMenu, ColumnsView, TextFilterView, ResultCollection,
-            SelectedCollection, DropZone, utils) {
+            SelectedCollection, Upload, utils) {
   'use strict';
 
   var DISABLE_EVENT = 'DISABLE';
@@ -481,7 +481,7 @@ define([
 
       /* dropzone support */
       if (self.options.uploadUrl) {
-        self.dropzone = new DropZone(self.$el, {
+        self.dropzone = new Upload(self.$el, {
           className: 'structure-dropzone',
           //clickable: false,
           clickable: $('<div/>')[0],
