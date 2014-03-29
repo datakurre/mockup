@@ -66,6 +66,7 @@ define([
         expect($('.pat-upload', this.$el).hasClass('dz-clickable')).to.be.equal(false);
       });
       it('update wrap data option to true', function() {
+        expect($('.pat-upload', this.$el).parent().hasClass('upload-wrapper')).to.be.equal(false);
         var attr = $('.pat-upload', this.$el).attr('data-pat-upload');
         $('.pat-upload', this.$el).attr('data-pat-upload', attr + '; wrap: true');
         registry.scan(this.$el);
@@ -77,6 +78,37 @@ define([
         registry.scan(this.$el);
         //TODO
       });
+
+    });
+
+    describe('Form', function () {
+      beforeEach(function() {
+        this.$el = $('' +
+          '<div>' +
+          '  <form class="pat-upload"' +
+          '    data-pat-upload="url: /upload">' +
+          '       <div class="put-it-here"></div>' +
+          '       <input type="submit" value="submit" />' +
+          '  </form>' +
+          '</div>');
+      });
+      afterEach(function() {
+        this.$el.remove();
+      });
+
+      it('form should place upload stuff before first submit button', function() {
+        registry.scan(this.$el);
+        expect($('.upload-container', this.$el).next().attr('type')).to.be.equal('submit');
+      });
+
+      it('form should place upload stuff inside provided container', function() {
+        var attr = $('.pat-upload', this.$el).attr('data-pat-upload');
+        $('.pat-upload', this.$el).attr('data-pat-upload', attr + '; container:.put-it-here');
+        registry.scan(this.$el);
+        expect($('.upload-container', this.$el).parent().hasClass('put-it-here')).to.be.equal(true);
+        expect($('.upload-all', this.$el).length).to.be.equal(0);
+      });
+
     });
 
   });
