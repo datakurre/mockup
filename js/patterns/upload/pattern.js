@@ -6,7 +6,7 @@
  *    className(string): value for class attribute in the form element ('upload')
  *    paramName(string): value for name attribute in the file input element ('file')
  *    uploadMultiple(boolean): condition value for multiple attribute in the file input element. If the value is 'true' and paramName is file, 'multiple=multiple' and 'name=file[]' will be added in the file input. (false)
- *    wrap(boolean): true or false for wrapping this element using the value of wrapperTemplate. If the value is 'inner', this element will wrap the wrapperTemplate value. (false)
+ *    wrap(boolean): true or false for wrapping this element using the value of wrapperTemplate. (false)
  *    wrapperTemplate(string): HTML template for wrapping around with this element. ('<div class="upload-container"/>')
  *    resultTemplate(string): HTML template for the element that will contain file information. ('<div class="dz-notice"><p>Drop files here...</p></div><div class="upload-previews"/>')
  *    autoCleanResults(boolean): condition value for the file preview in div element to fadeout after file upload is completed. (false)
@@ -74,31 +74,37 @@ define([
     defaults: {
       url: null, // XXX MUST provide url to submit to OR be in a form
       className: 'upload',
-      paramName: 'file',
-      uploadMultiple: false,
-      clickable: false,
       wrap: false,
-      addRemoveLinks: false,
-      wrapperTemplate: '<div class="upload-container"/>',
-      autoCleanResults: false,
-      previewsContainer: '.previews',
-      previewsTemplate: null,
+      wrapperTemplate: '<div class="upload-wrapper"/>',
       fileaddedClassName: 'dropping',
       useTus: false,
+
+      paramName: 'file',
+      uploadMultiple: false,
+      clickable: true,
+      addRemoveLinks: false,
+      autoCleanResults: false,
+      previewsContainer: '.previews',
+      previewTemplate: null,
       maxFilesize: 99999999 // let's not have a max by default...
     },
     init: function() {
-      var self = this,
-          dzoneOptions = this.getDzoneOptions();
+      var self = this;
 
+      self.$el.addClass(self.options.className);
       self.$el.append(_.template(InputTemplate));
+
+      if (self.options.wrap) {
+        self.$el.wrap(self.options.wrapperTemplate);
+        self.$el = self.$el.parent();
+      };
 
       self.uploadPath = null;
       self.$pathInput = $('input[name="upload-path"]', self.$el);
       self.setupRelatedItems(self.$pathInput);
 
       var $uploadArea = $('.upload-area', self.$el);
-
+      var dzoneOptions = this.getDzoneOptions();
       try {
         // if init of Dropzone fails it says nothing and
         // it fails silently. Using this block we make sure
@@ -106,16 +112,13 @@ define([
         // you can get a proper log of it
         self.dropzone = new Dropzone($uploadArea[0], dzoneOptions);
       } catch (e) {
-        //do stuff with the exception
-        if (typeof console === 'undefined' || typeof console.log === 'undefined') {
-          console = {};
-          console.log = function(msg) {
-            console.alert(msg);
-          };
-        } else {
+        if (window.DEBUG) {
+          // log it!
           console.log(e);
         }
+        throw e;
       }
+
 
       self.dropzone.on('addedfile', function() {
         console.log('file added!!');
@@ -134,6 +137,14 @@ define([
           $('.controls', self.$el).fadeOut('slow');
         }
       });
+
+      if (self.options.autoCleanResults) {
+        self.dropzone.on('complete', function(file) {
+          setTimeout(function() {
+            $(file.previewElement).fadeOut();
+          }, 3000);
+        });
+      }
 
       // self.dropzone.on('sending', function(file) {
       //   console.log(file);
@@ -193,9 +204,19 @@ define([
       delete options.fileaddedClassName;
       delete options.useTus;
 
-      // XXX: do this right
+      if (self.options.previewsContainer) {
+        /*
+         * if they have a select but it's not an id, let's make an id selector
+         * so we can target the correct container. dropzone is weird here...
+         */
+        var $preview = self.$el.find(self.options.previewsContainer);
+        if ($preview.length > 0) {
+          options.previewsContainer = $preview[0];
+        }
+      }
+
+      // XXX: do we need to allow this?
       options.autoProcessQueue = false;
-      options.clickable = true;
       // options.addRemoveLinks = true;  // we show them in the template
       options.previewTemplate = QueueItemTemplate;
       options.uploadMultiple = true;
