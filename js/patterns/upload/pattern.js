@@ -89,98 +89,96 @@ define([
     },
     init: function() {
       var self = this,
-          dzone_options = this.getDzoneOptions();
+          dzoneOptions = this.getDzoneOptions();
 
       self.$el.append(_.template(InputTemplate));
 
       self.uploadPath = null;
-      self.$path_input = $('input[name="upload-path"]', self.$el);
-      self.setupRelatedItems(self.$path_input);
+      self.$pathInput = $('input[name="upload-path"]', self.$el);
+      self.setupRelatedItems(self.$pathInput);
 
-      var $upload_area = $('.upload-area', self.$el);
+      var $uploadArea = $('.upload-area', self.$el);
 
       try {
         // if init of Dropzone fails it says nothing and
         // it fails silently. Using this block we make sure
         // that if you break it w/ some weird or missing option
         // you can get a proper log of it
-        self.dropzone = new Dropzone($upload_area[0], dzone_options);
-      } catch(e) {
+        self.dropzone = new Dropzone($uploadArea[0], dzoneOptions);
+      } catch (e) {
         //do stuff with the exception
-        if (typeof console === "undefined" || typeof console.log === "undefined") {
-            console = {};
-            console.log = function(msg) {
-                // alert(msg);
-            };
+        if (typeof console === 'undefined' || typeof console.log === 'undefined') {
+          console = {};
+          console.log = function(msg) {
+            console.alert(msg);
+          };
         } else {
           console.log(e);
         }
       }
 
-      self.dropzone.on('addedfile', function(){
+      self.dropzone.on('addedfile', function() {
         console.log('file added!!');
         // show upload controls
         $('.controls', self.$el).fadeIn('slow');
         // self.$el.addClass(fileaddedClassName);
-        // setTimeout(function(){
-        //   if(!processing){
+        // setTimeout(function() {
+        //   if (!processing) {
         //     process();
         //   }
         // }, 100);
       });
 
-      self.dropzone.on('removedfile', function(){
-        if(self.dropzone.files.length < 1){
+      self.dropzone.on('removedfile', function() {
+        if (self.dropzone.files.length < 1) {
           $('.controls', self.$el).fadeOut('slow');
         }
       });
 
-      // self.dropzone.on('sending', function(file){
+      // self.dropzone.on('sending', function(file) {
       //   console.log(file);
       // });
 
-      // self.dropzone.on('success', function(file){
+      // self.dropzone.on('success', function(file) {
       //   console.log(file);
       // });
 
-      // self.dropzone.on('complete', function(file){
+      // self.dropzone.on('complete', function(file) {
       //   console.log(file);
       // });
 
-      // self.dropzone.on('uploadprogress', function(file){
+      // self.dropzone.on('uploadprogress', function(file) {
       //   console.log(file);
       // });
 
-      self.dropzone.on('totaluploadprogress', function(pct){
+      self.dropzone.on('totaluploadprogress', function(pct) {
         console.log(pct);
         $('.progress-bar-success').attr('aria-valuenow', pct).css('width', pct + '%');
       });
 
-
-      $(".upload-all", self.$el).click(function (e) {
-          e.preventDefault();
-          e.stopPropagation();
-          self.dropzone.processQueue();
-        }
-      );
+      $('.upload-all', self.$el).click(function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        self.dropzone.processQueue();
+      });
       // self.processUpload();
     },
 
-    getDzoneOptions: function(){
+    getDzoneOptions: function() {
       var self = this;
 
       // clickable option
-      if(typeof(self.options.clickable) === 'string'){
-        if(self.options.clickable === 'true'){
+      if (typeof(self.options.clickable) === 'string') {
+        if (self.options.clickable === 'true') {
           self.options.clickable = true;
         } else {
           self.options.clickable = false;
         }
       }
       // url to submit to
-      if(!self.options.url && self.$el[0].tagName === 'FORM'){
+      if (!self.options.url && self.$el[0].tagName === 'FORM') {
         var url = self.$el.attr('action');
-        if(!url){
+        if (!url) {
           // form without action, defaults to current url
           url = window.location.href;
         }
@@ -204,30 +202,29 @@ define([
       return options;
     },
 
-    processUpload: function(){
+    processUpload: function() {
       var self = this,
           processing = false,
           useTus = self.options.useTus,
           fileaddedClassName = self.options.fileaddedClassName;
 
-      function process(){
+      function process() {
         console.log('processing....');
         processing = true;
-        if(self.dropzone.files.length === 0){
+        if (self.dropzone.files.length === 0) {
           processing = false;
           self.$el.removeClass(fileaddedClassName);
           return;
         }
         var file = self.dropzone.files[0];
-        if ([Dropzone.SUCCESS,
-            Dropzone.ERROR,
-            Dropzone.CANCELED].indexOf(file.status) !== -1) {
+        if ([Dropzone.SUCCESS, Dropzone.ERROR, Dropzone.CANCELED]
+            .indexOf(file.status) !== -1) {
           // remove it
           self.dropzone.removeFile(file);
           process();
-        } else if (file.status !== Dropzone.UPLOADING){
+        } else if (file.status !== Dropzone.UPLOADING) {
           // start processing file
-          if(useTus && window.tus){
+          if (useTus && window.tus) {
             // use tus upload if installed
             self.handleTusUpload(file);
           } else {
@@ -247,7 +244,7 @@ define([
 
     },
 
-    handleTusUpload: function(file){
+    handleTusUpload: function(file) {
       var self = this,
           $preview = $(file.previewElement),
           $progress = $preview.find('[data-dz-uploadprogress]'),
@@ -261,10 +258,10 @@ define([
           'FILENAME': file.name
         },
         chunkSize: chunkSize
-      }).fail(function(){
-        // alert('Error uploading with TUS resumable uploads');
+      }).fail(function() {
+        console.alert('Error uploading with TUS resumable uploads');
         file.status = Dropzone.ERROR;
-      }).progress(function(e, bytesUploaded, bytesTotal){
+      }).progress(function(e, bytesUploaded, bytesTotal) {
         var percentage = (bytesUploaded / bytesTotal * 100);
         $progress.css('width', percentage + '%');
         $progress.parent().css('display', 'block');
@@ -272,26 +269,26 @@ define([
         $size.html('uploading...<br />' +
                    self.formatBytes(bytesUploaded) +
                    ' / ' + self.formatBytes(bytesTotal));
-      }).done(function(url, file){
+      }).done(function(url, file) {
         file.status = Dropzone.SUCCESS;
         self.dropzone.emit('success', file);
         self.dropzone.emit('complete', file);
       });
     },
 
-    formatBytes: function(bytes){
+    formatBytes: function(bytes) {
       var kb = Math.round(bytes / 1024);
-      if(kb < 1024){
+      if (kb < 1024) {
         return kb + ' KiB';
       }
       var mb = Math.round(kb / 1024);
-      if(mb < 1024){
+      if (mb < 1024) {
         return mb + ' MB';
       }
       return Math.round(mb / 1024) + ' GB';
     },
 
-    setupRelatedItems: function($input){
+    setupRelatedItems: function($input) {
       // TODO: get options from upload pattern setups
       var options = {
         'vocabularyUrl': '/relateditems-test.json'
