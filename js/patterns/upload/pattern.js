@@ -11,6 +11,7 @@
  *    resultTemplate(string): HTML template for the element that will contain file information. ('<div class="dz-notice"><p>Drop files here...</p></div><div class="upload-previews"/>')
  *    autoCleanResults(boolean): condition value for the file preview in div element to fadeout after file upload is completed. (false)
  *    previewsContainer(selector): JavaScript selector for file preview in div element. (.upload-previews)
+ *    container(selector): JavaScript selector for where to put upload stuff into in case of form. If not provided it will be place before the first submit button. ('')
  *
  * Documentation:
  *    # On a form element
@@ -24,6 +25,7 @@
  * Example: example-1
  *    <form method="post" action="/upload" enctype="multipart/form-data"
  *          class="pat-upload" data-pat-upload="clickable:true">
+ *        <input type="submit" value="Submit" />
  *    </form>
  *
  * Example: example-2
@@ -78,6 +80,7 @@ define([
       wrapperTemplate: '<div class="upload-wrapper"/>',
       fileaddedClassName: 'dropping',
       useTus: false,
+      container: '',
 
       paramName: 'file',
       uploadMultiple: false,
@@ -88,16 +91,32 @@ define([
       previewTemplate: null,
       maxFilesize: 99999999 // let's not have a max by default...
     },
+
+    isForm: function() {
+      return this.$el[0].tagName === 'FORM';
+    },
+
     init: function() {
       var self = this;
 
+      var template = _.template(InputTemplate);
       self.$el.addClass(self.options.className);
-      self.$el.append(_.template(InputTemplate));
+      if (self.isForm()){
+        if (self.options.container) {
+          $(self.options.container, self.$el).append(template);
+        } else {
+          $('[type="submit"]:first', self.$el).before(template);
+        }
+        // remove the upload all button
+        $('.upload-all', self.$el).remove();
+      } else {
+        self.$el.append(template);
+      }
 
       if (self.options.wrap) {
         self.$el.wrap(self.options.wrapperTemplate);
         self.$el = self.$el.parent();
-      };
+      }
 
       self.uploadPath = null;
       self.$pathInput = $('input[name="upload-path"]', self.$el);
@@ -105,6 +124,7 @@ define([
 
       var $uploadArea = $('.upload-area', self.$el);
       var dzoneOptions = this.getDzoneOptions();
+
       try {
         // if init of Dropzone fails it says nothing and
         // it fails silently. Using this block we make sure
@@ -119,6 +139,15 @@ define([
         throw e;
       }
 
+      if (self.isForm()) {
+        var submit = self.$el.find('[type=submit]');
+        submit.on('click', function(e) {
+          // Make sure that the form isn't actually being sent.
+          e.preventDefault();
+          e.stopPropagation();
+          self.dropzone.processQueue();
+        });
+      }
 
       self.dropzone.on('addedfile', function() {
         console.log('file added!!');
@@ -187,7 +216,7 @@ define([
         }
       }
       // url to submit to
-      if (!self.options.url && self.$el[0].tagName === 'FORM') {
+      if (!self.options.url && self.isForm()) {
         var url = self.$el.attr('action');
         if (!url) {
           // form without action, defaults to current url
@@ -220,6 +249,15 @@ define([
       // options.addRemoveLinks = true;  // we show them in the template
       options.previewTemplate = QueueItemTemplate;
       options.uploadMultiple = true;
+
+      // if our element is a form we should force some values
+      // https://github.com/enyo/dropzone/wiki/Combine-normal-form-with-Dropzone
+      if (self.isForm()){
+        options.autoProcessQueue = false;
+        options.uploadMultiple = true;
+        options.parallelUploads = 100;
+        options.maxFiles = 100;
+      }
       return options;
     },
 
