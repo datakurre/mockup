@@ -70,7 +70,7 @@ define([
   'mockup-patterns-modal',
   'tinymce',
   'mockup-patterns-autotoc',
-  'mockup-patterns-dropzone',
+  'mockup-patterns-upload',
   'dropzone',
   'text!js/patterns/tinymce/templates/result.xml',
   'text!js/patterns/tinymce/templates/selection.xml',
@@ -79,7 +79,7 @@ define([
   'js/patterns/tinymce/upload'
 ], function($, _,
             Base, RelatedItems, Modal, tinymce,
-            AutoTOC, DropZone, dropzone,
+            AutoTOC, Upload, dropzone,
             ResultTemplate, SelectionTemplate,
             utils, LinkModal, UploadModal) {
   'use strict';
@@ -337,7 +337,7 @@ define([
          * disable until it works better
          * can still upload via link and file overlays
 
-        self.dropzone = new DropZone(self.$el, {
+        self.dropzone = new Upload(self.$el, {
           className: 'tinymce-dropzone',
           clickable: false,
           url: self.options.uploadUrl,

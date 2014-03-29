@@ -28,11 +28,11 @@ define([
   'underscore',
   'backbone',
   'js/ui/views/base',
-  'mockup-patterns-dropzone',
+  'mockup-patterns-upload',
   'mockup-patterns-tree',
   'mockup-patterns-ace',
   'text!js/patterns/filemanager/templates/app.xml'
-], function($, _, Backbone, BaseView, DropZone, Tree, Ace, AppTemplate) {
+], function($, _, Backbone, BaseView, Upload, Tree, Ace, AppTemplate) {
   'use strict';
 
   var AppView = BaseView.extend({
@@ -45,19 +45,19 @@ define([
       self.tree = new Tree(self.$tree, self.treeConfig);
 
       if (self.uploadUrl) {
-        self.dropzone = new DropZone(self.$el, {
-          className: 'filemanager-dropzone',
+        self.upload = new Upload(self.$el, {
+          className: 'filemanager-upload',
           clickable: false,
           url: self.options.uploadUrl,
           autoCleanResults: true,
           success: function(e, data) {
             // XXX fill in here
           }
-        }).dropzone;
-        self.dropzone.on('sending', function() {
+        }).upload;
+        self.upload.on('sending', function() {
           self.$el.addClass('dropping');
         });
-        self.dropzone.on('complete', function() {
+        self.upload.on('complete', function() {
           self.$el.removeClass('dropping');
         });
       }

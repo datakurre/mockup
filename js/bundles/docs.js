@@ -58,11 +58,6 @@ require([
             description: 'A pattern that checks cookies enabled and asks permission for the user to allow cookies or not.',
             url: 'js/patterns/cookiedirective.js'
           },
-          { id: 'dropzone',
-            title: 'DropZone',
-            description: 'File upload with drag and drop support.',
-            url: 'js/patterns/dropzone.js'
-          },
           { id: 'upload',
             title: 'Upload',
             description: 'File upload with drag and drop support.',

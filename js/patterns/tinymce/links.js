@@ -31,10 +31,10 @@ define([
   'mockup-patterns-relateditems',
   'mockup-patterns-modal',
   'tinymce',
-  'mockup-patterns-dropzone',
+  'mockup-patterns-upload',
   'text!js/patterns/tinymce/templates/link.xml',
   'text!js/patterns/tinymce/templates/image.xml'
-], function($, _, Base, RelatedItems, Modal, tinymce, DropZone,
+], function($, _, Base, RelatedItems, Modal, tinymce, Upload,
             LinkTemplate, ImageTemplate) {
   'use strict';
 
@@ -493,7 +493,7 @@ define([
     setupDropzone: function() {
       var self = this;
       if (self.options.uploadUrl) {
-        self.dropzone = new DropZone(self.modal.$modal, {
+        self.dropzone = new Upload(self.modal.$modal, {
           className: 'tinymce-dropzone',
           clickable: false,
           url: self.options.uploadUrl,
