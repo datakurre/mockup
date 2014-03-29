@@ -63,6 +63,11 @@ require([
             description: 'File upload with drag and drop support.',
             url: 'js/patterns/dropzone.js'
           },
+          { id: 'upload',
+            title: 'Upload',
+            description: 'File upload with drag and drop support.',
+            url: 'js/patterns/upload/pattern.js'
+          },
           { id: 'expose',
             title: 'Expose',
             description: 'Exposes the focused element by darkening everything else on the page. Useful to focus the user attention on a particular area.',
