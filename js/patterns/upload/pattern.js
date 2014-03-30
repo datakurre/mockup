@@ -6,6 +6,7 @@
  *    className(string): value for class attribute in the form element ('upload')
  *    paramName(string): value for name attribute in the file input element ('file')
  *    uploadMultiple(boolean): condition value for multiple attribute in the file input element. If the value is 'true' and paramName is file, 'multiple=multiple' and 'name=file[]' will be added in the file input. (false)
+ *    ajaxUpload(boolean): true or false for letting the widget upload the files via ajax. If false the form will act like a normal form. (true)
  *    wrap(boolean): true or false for wrapping this element using the value of wrapperTemplate. (false)
  *    wrapperTemplate(string): HTML template for wrapping around with this element. ('<div class="upload-container"/>')
  *    resultTemplate(string): HTML template for the element that will contain file information. ('<div class="dz-notice"><p>Drop files here...</p></div><div class="upload-previews"/>')
@@ -22,6 +23,10 @@
  *
  *    {{ example-2 }}
  *
+ *    # On a single input element inside a form with NO ajax upload
+ *
+ *    {{ example-3 }}
+ *
  * Example: example-1
  *    <form method="post" action="/upload" enctype="multipart/form-data"
  *          class="pat-upload" data-pat-upload="clickable:true">
@@ -36,6 +41,13 @@
  *        <p>Another thing here that is useful</p>
  *      </div>
  *    </div>
+ *
+ * Example: example-3
+ *    <form method="post" action="/upload" enctype="multipart/form-data">
+ *        <input class="pat-upload" name="single-upload-file"
+ *               data-pat-upload="uploadMultiple:false;ajaxUpload:false" />
+ *        <input type="submit" value="submit" />
+ *    </form>
  *
  * License:
  *    Copyright (C) 2010 Plone Foundation
@@ -61,11 +73,14 @@ define([
   'mockup-patterns-base',
   'mockup-patterns-relateditems',
   'dropzone',
-  'text!js/patterns/upload/templates/upload_input.xml',
-  'text!js/patterns/upload/templates/queue_item_dz.xml',
+  'text!js/patterns/upload/templates/upload_multiple_input.xml',
+  'text!js/patterns/upload/templates/upload_single_input.xml',
+  'text!js/patterns/upload/templates/queue_item.xml',
+  'text!js/patterns/upload/templates/queue_single_item.xml',
 ], function($, _, Base,
             RelatedItems, Dropzone,
-            InputTemplate, QueueItemTemplate) {
+            MultipleInputTemplate, SingleInputTemplate,
+            QueueItemTemplate, QueueSingleItemTemplate) {
   'use strict';
 
   /* we do not want this plugin to auto discover */
@@ -81,9 +96,10 @@ define([
       fileaddedClassName: 'dropping',
       useTus: false,
       container: '',
+      ajaxUpload: true,
 
       paramName: 'file',
-      uploadMultiple: false,
+      uploadMultiple: true,
       clickable: true,
       addRemoveLinks: false,
       autoCleanResults: false,
@@ -92,14 +108,23 @@ define([
       maxFilesize: 99999999 // let's not have a max by default...
     },
 
+    _is: function(name) {
+      return this.$el[0].tagName === name;
+    },
+
     isForm: function() {
-      return this.$el[0].tagName === 'FORM';
+      return this._is('FORM');
+    },
+
+    isFileInput: function() {
+      return this._is('INPUT') && (this.$el.attr('type') === 'file');
     },
 
     init: function() {
-      var self = this;
+      var self = this,
+          template = self.options.uploadMultiple ? MultipleInputTemplate : SingleInputTemplate;
 
-      var template = _.template(InputTemplate);
+      template = _.template(template);
       self.$el.addClass(self.options.className);
       if (self.isForm()){
         if (self.options.container) {
@@ -109,6 +134,17 @@ define([
         }
         // remove the upload all button
         $('.upload-all', self.$el).remove();
+      } else if (self.isFileInput()) {
+        // if we have a single input we want to wrap it into our container
+        // and to use its name for for uploading
+        if (!self.options.ajaxUpload) {
+          // no ajax upload, drop the fallback
+          $('.fallback', this.$el).remove();
+        }
+        self.$el.before(SingleInputTemplate);
+        self.$el.appendTo($('.single-input', self.$el.parent()));
+        self.$el = self.$el.closest('.upload-container');
+        self.options.paramName = this.$el.attr('name');
       } else {
         self.$el.append(template);
       }
@@ -247,8 +283,7 @@ define([
       // XXX: do we need to allow this?
       options.autoProcessQueue = false;
       // options.addRemoveLinks = true;  // we show them in the template
-      options.previewTemplate = QueueItemTemplate;
-      options.uploadMultiple = true;
+      options.previewTemplate = options.uploadMultiple ? QueueItemTemplate : QueueSingleItemTemplate;
 
       // if our element is a form we should force some values
       // https://github.com/enyo/dropzone/wiki/Combine-normal-form-with-Dropzone

@@ -1,0 +1,17 @@
+<div class="upload-container upload-single">
+    <h1>Upload stuff here</h1>
+    <p class="help">
+        Just drag N drop stuff on the area below
+        or press "upload" button.
+    </p>
+    <div class="upload-area">
+        <div class="dz-message"><p>Drop files here...</p></div>
+        <div class="single-input"></div>
+        <div class="fallback">
+            <input name="file" type="file" />
+        </div>
+        <div class="previews">
+
+        </div>
+    </div>
+</div>

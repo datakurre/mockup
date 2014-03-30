@@ -111,5 +111,26 @@ define([
 
     });
 
+
+    describe('Input', function () {
+      beforeEach(function() {
+        this.$el = $('' +
+          '<div>' +
+          '  <input type="file" name="foo" class="pat-upload" data-pat-upload="url: /upload" />' +
+          '</div>');
+      });
+      afterEach(function() {
+        this.$el.remove();
+      });
+
+      it('should be wrapped inside pattern container', function() {
+        registry.scan(this.$el);
+        expect(this.$el.find('.upload-container.upload-single').length).to.be.equal(1);
+        expect(this.$el.find('.upload-container input[name="foo"]').length).to.be.equal(1);
+
+      });
+
+    });
+
   });
 });
