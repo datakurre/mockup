@@ -40,6 +40,7 @@ define([
   'mockup-patterns-formautofocus',
   'mockup-patterns-modal',
   'mockup-patterns-structure',
+  'mockup-patterns-upload',
   'bootstrap-dropdown',
   'bootstrap-collapse',
   'bootstrap-tooltip'
