@@ -18,10 +18,11 @@
                     />
             </div>
             <div class="col-md-3">
-                <div class="fileUpload btn btn-default">
-                    <span>Browse</span>
-                    <input id="uploadBtn" type="file" class="upload" />
-                </div>
+                <button
+                    type="button"
+                    class="btn btn-primary browse">
+                    Browse
+                </button>
             </div>
         </div>
         <div class="upload-queue">

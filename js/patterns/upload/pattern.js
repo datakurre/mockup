@@ -73,14 +73,11 @@ define([
   'mockup-patterns-base',
   'mockup-patterns-relateditems',
   'dropzone',
-  'text!js/patterns/upload/templates/upload_multiple_input.xml',
-  'text!js/patterns/upload/templates/upload_single_input.xml',
-  'text!js/patterns/upload/templates/queue_item.xml',
-  'text!js/patterns/upload/templates/queue_single_item.xml',
+  'text!js/patterns/upload/templates/upload.xml',
+  'text!js/patterns/upload/templates/preview.xml',
 ], function($, _, Base,
             RelatedItems, Dropzone,
-            MultipleInputTemplate, SingleInputTemplate,
-            QueueItemTemplate, QueueSingleItemTemplate) {
+            UploadTemplate, PreviewTemplate) {
   'use strict';
 
   /* we do not want this plugin to auto discover */
@@ -123,7 +120,7 @@ define([
 
     init: function() {
       var self = this,
-          template = self.options.uploadMultiple ? MultipleInputTemplate : SingleInputTemplate;
+          template = UploadTemplate;
 
       template = _.template(template);
       self.$el.addClass(self.options.className);
@@ -142,9 +139,10 @@ define([
       } else if (self.isFileInput()) {
         // if we have a single input we want to wrap it into our container
         // and to use its name for for uploading
-        self.options.paramName = this.$el.attr('name');
-        self.$el.before(SingleInputTemplate);
-        self.$el.appendTo($('.single-input', self.$el.parent()));
+        self.$el.parent().append(template);
+        self.$el.prependTo( self.$el.siblings('.upload-container') );
+
+        // self.options.paramName = this.$el.attr('name');
         self.$el = self.$el.closest('.upload-container');
         if (typeof(self.options.ajaxUpload) === 'string') {
           if (self.options.ajaxUpload === 'true') {
@@ -153,6 +151,7 @@ define([
             self.options.ajaxUpload = false;
           }
         }
+        $('.upload-all', self.$el).remove();
       } else {
         self.$el.append(template);
       }
@@ -177,6 +176,14 @@ define([
       self.setupRelatedItems(self.$pathInput);
 
       var $uploadArea = $('.upload-area', self.$el);
+
+      $('button.browse').click(function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        // we trigger the dropzone dialog!
+        self.dropzone.hiddenFileInput.click()
+      });
+
       var dzoneOptions = this.getDzoneOptions();
 
       try {
@@ -203,6 +210,7 @@ define([
         console.log('file added!!');
         // show upload controls
         $('.controls', self.$el).fadeIn('slow');
+        debugger;
         // self.$el.addClass(fileaddedClassName);
         // setTimeout(function() {
         //   if (!processing) {
@@ -306,7 +314,7 @@ define([
       // XXX: do we need to allow this?
       options.autoProcessQueue = false;
       // options.addRemoveLinks = true;  // we show them in the template
-      options.previewTemplate = options.uploadMultiple ? QueueItemTemplate : QueueSingleItemTemplate;
+      options.previewTemplate = PreviewTemplate;
 
       // if our element is a form we should force some values
       // https://github.com/enyo/dropzone/wiki/Combine-normal-form-with-Dropzone
