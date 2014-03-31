@@ -140,18 +140,9 @@ define([
         // if we have a single input we want to wrap it into our container
         // and to use its name for for uploading
         self.$el.parent().append(template);
-        self.$el.prependTo( self.$el.siblings('.upload-container') );
-
-        // self.options.paramName = this.$el.attr('name');
-        self.$el = self.$el.closest('.upload-container');
-        if (typeof(self.options.ajaxUpload) === 'string') {
-          if (self.options.ajaxUpload === 'true') {
-            self.options.ajaxUpload = true;
-          } else {
-            self.options.ajaxUpload = false;
-          }
-        }
-        $('.upload-all', self.$el).remove();
+        // self.$el.prependTo( self.$el.siblings('.upload-container') );
+        self.$el.parent().find('.upload-area').html(self.$el);
+        return
       } else {
         self.$el.append(template);
       }
@@ -206,7 +197,7 @@ define([
         });
       }
 
-      self.dropzone.on('addedfile', function() {
+      self.dropzone.on('addedfile', function(file) {
         console.log('file added!!');
         // show upload controls
         $('.controls', self.$el).fadeIn('slow');
@@ -254,6 +245,19 @@ define([
       });
 
       self.dropzone.on("addedfile", function(file){
+        // if (self.)
+        $(self.dropzone.files).each(function(){
+
+        })
+      });
+
+      self.dropzone.on("maxfilesexceeded", function(file){
+        // debugger;
+        // for single file upload we want the latest uploaded file
+        // to take precedence of every other file uploaded previously
+        // XXX: this is not working since it's trigger 'totaluploadprogress' evt
+        // self.dropzone.removeAllFiles()
+        // self.dropzone.addFile(file)
       });
 
       $('.upload-all', self.$el).click(function (e) {
