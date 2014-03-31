@@ -44,8 +44,8 @@
  *
  * Example: example-3
  *    <form method="post" action="/upload" enctype="multipart/form-data">
- *        <input class="pat-upload" name="single-upload-file"
- *               data-pat-upload="uploadMultiple:false;ajaxUpload:false" />
+ *        <input type="file" class="pat-upload" name="single-upload-file"
+ *               data-pat-upload="uploadMultiple:false;ajaxUpload:false;maxFiles:1" />
  *        <input type="submit" value="submit" />
  *    </form>
  *
@@ -105,6 +105,7 @@ define([
       autoCleanResults: false,
       previewsContainer: '.previews',
       previewTemplate: null,
+      maxFiles: null,
       maxFilesize: 99999999 // let's not have a max by default...
     },
 
@@ -126,29 +127,44 @@ define([
 
       template = _.template(template);
       self.$el.addClass(self.options.className);
+
       if (self.isForm()){
         if (self.options.container) {
+          // a container for the upload box has been provided
           $(self.options.container, self.$el).append(template);
         } else {
+          // no container, so we want upload box before the form submit button
           $('[type="submit"]:first', self.$el).before(template);
         }
+        // and we want the form button to handle the upload
         // remove the upload all button
         $('.upload-all', self.$el).remove();
       } else if (self.isFileInput()) {
         // if we have a single input we want to wrap it into our container
         // and to use its name for for uploading
-        if (!self.options.ajaxUpload) {
-          // no ajax upload, drop the fallback
-          $('.fallback', this.$el).remove();
-        } else {
-          self.options.paramName = self.$el.attr('name');
-        }
+        self.options.paramName = this.$el.attr('name');
         self.$el.before(SingleInputTemplate);
         self.$el.appendTo($('.single-input', self.$el.parent()));
         self.$el = self.$el.closest('.upload-container');
-        self.options.paramName = this.$el.attr('name');
+        if (typeof(self.options.ajaxUpload) === 'string') {
+          if (self.options.ajaxUpload === 'true') {
+            self.options.ajaxUpload = true;
+          } else {
+            self.options.ajaxUpload = false;
+          }
+        }
       } else {
         self.$el.append(template);
+      }
+
+      if (!self.options.ajaxUpload) {
+        // no ajax upload, drop the fallback
+        $('.fallback', this.$el).remove();
+        if (this.$el.hasClass('.upload-container')){
+          this.$el.addClass('no-ajax-upload');
+        } else {
+          this.$el.closest('.upload-container').addClass('no-ajax-upload');
+        }
       }
 
       if (self.options.wrap) {
@@ -178,11 +194,7 @@ define([
       }
 
       if (self.isForm()) {
-        var submit = self.$el.find('[type=submit]');
-        submit.on('click', function(e) {
-          // Make sure that the form isn't actually being sent.
-          e.preventDefault();
-          e.stopPropagation();
+        self.$el.on('submit', function(e) {
           self.dropzone.processQueue();
         });
       }
@@ -234,6 +246,9 @@ define([
         $('.progress-bar-success').attr('aria-valuenow', pct).css('width', pct + '%');
       });
 
+      self.dropzone.on("addedfile", function(file){
+      });
+
       $('.upload-all', self.$el).click(function (e) {
         e.preventDefault();
         e.stopPropagation();
@@ -254,8 +269,14 @@ define([
         }
       }
       // url to submit to
-      if (!self.options.url && self.isForm()) {
-        var url = self.$el.attr('action');
+      if (!self.options.url) {
+        var url;
+        if (self.isForm()) {
+          url = self.$el.attr('action');
+        }
+        if (self.isFileInput()) {
+          url = self.$el.closest('form').attr('action');
+        }
         if (!url) {
           // form without action, defaults to current url
           url = window.location.href;

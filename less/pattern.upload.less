@@ -8,84 +8,85 @@
 }
 .importCSS();
 
-.pat-upload.drop-active{
-    border: 1px solid red;
-}
-.pat-upload .upload-area {
-    border: 3px dashed #ccc;
-    padding: 30px;
-    border-radius: 5px;
-    margin: 0 auto 15px auto;
-    width: 600px;
-}
-.pat-upload .upload-queue{
-    .input-sm{
-        line-height: 1em;
-        font-size: 0.8em;
-        height: 24px;
-        margin-bottom: 1px;
-    }
-    .controls{
-        margin-top: 10px;
-        padding-top: 10px;
-    }
-    .previews{ margin-top: 2em }
-    .previews .item{ padding: 5px 0; }
-    .previews .title{ padding-left: 0; }
-    .previews .info img {
-        width: 32px;
-        height: 32px;
-        margin-top: -26px;
-        float: right;
-    }
-}
-.pat-upload #fakeUploadFile{
-    height: 35px;
-}
-.pat-upload .upload-area .controls button,
-.pat-upload .upload-area input{
-    width: 100%;
-}
-.pat-upload .upload-area .fileUpload {
-    position: relative;
-    overflow: hidden;
-    width: 100%;
-}
-.pat-upload .upload-area .fileUpload input.upload {
-    position: absolute;
-    top: 0;
-    right: 0;
-    margin: 0;
-    padding: 0;
-    font-size: 20px;
-    cursor: pointer;
-    opacity: 0;
-    filter: alpha(opacity=0);
-}
-.pat-upload .pattern-relateditems-container,
-.pat-upload .pattern-relateditems-container > *{
-    width: 100% !important;
-}
-.pat-upload .align-right{ text-align: right }
+.upload-container {
+    .upload-area {
+        border: 3px dashed #ccc;
+        padding: 30px;
+        border-radius: 5px;
+        margin: 0 auto 15px auto;
+        width: 600px;
 
-.pat-upload .controls { display: none }
-.pat-upload .actions { margin-top: 0.5em };
-.pat-upload .progress {
-    height: 34px;
-    margin-bottom: 0;
-}
-
-.dz-drag-hover{
-    -webkit-box-shadow: inset 1px 0px 12px 5px rgba(0,0,0,0.75);
-    -moz-box-shadow: inset 1px 0px 12px 5px rgba(0,0,0,0.75);
-    box-shadow: inset 1px 0px 12px 5px rgba(0,0,0,0.75);
-}
-.upload .dz-preview .dz-details .dz-size,
-.upload-previews .dz-preview .dz-details .dz-size{
-    font-size: 11px;
-}
-
-.upload .dz-preview .dz-details,
-.dropzone-previews .dz-preview .dz-details{
-    margin-bottom: 42px;
+        .controls button,
+        input{
+            width: 100%;
+        }
+        .fileUpload {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            input.upload {
+                position: absolute;
+                top: 0;
+                right: 0;
+                margin: 0;
+                padding: 0;
+                font-size: 20px;
+                cursor: pointer;
+                opacity: 0;
+                filter: alpha(opacity=0);
+            }
+        }
+    }
+    .upload-queue{
+        .input-sm{
+            line-height: 1em;
+            font-size: 0.8em;
+            height: 24px;
+            margin-bottom: 1px;
+        }
+        .controls{
+            margin-top: 10px;
+            padding-top: 10px;
+        }
+        .previews{
+            margin-top: 2em;
+            .item{ padding: 5px 0; }
+            .title{ padding-left: 0; }
+            .info img {
+                width: 32px;
+                height: 32px;
+                margin-top: -26px;
+                float: right;
+            }
+        }
+    }
+    #fakeUploadFile{
+        height: 35px;
+    }
+    .pattern-relateditems-container,
+    .pattern-relateditems-container > *{
+        width: 100% !important;
+    }
+    .align-right{ text-align: right }
+    .controls { display: none }
+    .actions { margin-top: 0.5em };
+    .progress {
+        height: 34px;
+        margin-bottom: 0;
+    }
+    .dz-drag-hover{
+        -webkit-box-shadow: inset 1px 0px 12px 5px rgba(0,0,0,0.75);
+        -moz-box-shadow: inset 1px 0px 12px 5px rgba(0,0,0,0.75);
+        box-shadow: inset 1px 0px 12px 5px rgba(0,0,0,0.75);
+    }
+    .upload .dz-preview .dz-details .dz-size,
+    .upload-previews .dz-preview .dz-details .dz-size{
+        font-size: 11px;
+    }
+    .dz-max-files-reached .dz-message{
+        background-color: orange;
+        p{
+            margin: 0;
+        }
+    }
 }

@@ -112,30 +112,12 @@ module.exports = function(grunt) {
 
   mockup.registerBundle('widgets');
 
-  mockup.registerBundle('toolbar', {
-    uglify: {
-      toolbar: {
-        files: {
-          'build/toolbar_init.min.js': [
-            'bower_components/domready/ready.js',
-            'js/iframe_init.js'
-          ]
-        }
-      }
-    },
-    less: {
-      toolbar: {
-        files: {
-          'build/toolbar_init.min.css': 'less/iframe_init.less'
-        }
-      }
-    },
-  });
-
   mockup.initGrunt(grunt, {
-    karma: {
-      options: {
-        exclude: [ 'tests/iframe-test.js' ],
+    uglify: {
+      barceloneta: {
+        files: {
+          'build/barceloneta.js': 'js/bundles/barceloneta_develop.js'
+        }
       }
     },
     sed: {
