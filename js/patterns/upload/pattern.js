@@ -140,6 +140,8 @@ define([
         if (!self.options.ajaxUpload) {
           // no ajax upload, drop the fallback
           $('.fallback', this.$el).remove();
+        } else {
+          self.options.paramName = self.$el.attr('name');
         }
         self.$el.before(SingleInputTemplate);
         self.$el.appendTo($('.single-input', self.$el.parent()));
