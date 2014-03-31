@@ -210,7 +210,6 @@ define([
         console.log('file added!!');
         // show upload controls
         $('.controls', self.$el).fadeIn('slow');
-        debugger;
         // self.$el.addClass(fileaddedClassName);
         // setTimeout(function() {
         //   if (!processing) {
