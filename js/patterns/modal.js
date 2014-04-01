@@ -174,10 +174,10 @@ define([
         redirectOnResponse: false,
         redirectToUrl: function($action, response, options) {
           var href = /<base.*?(\/>|<\/base>)/im.exec(response);
-          if(href !== null){
+          if (href !== null){
             href = $(href[0]).attr('href');
-          }else{
-            href = $("body").data('base-url');
+          } else {
+            href = $('body').data('base-url');
           }
           return href;
         }
@@ -255,10 +255,10 @@ define([
         }
 
 
-        if(options.formsUseAjax !== true){
+        if (options.formsUseAjax !== true){
           // EJECT EJECT!!
           $action.unbind('click').click();
-          return
+          return;
         }
         // We want to trigger the form submit event but NOT use the default
         $form.on('submit', function(e) {
@@ -446,7 +446,7 @@ define([
             .appendTo($('.pattern-modal-buttons', self.$modal))
             .off('click').on('click', function(e) {
               e.stopPropagation();
-              e.preventDefault();
+              //e.preventDefault();
               $button.trigger('click');
             });
           $button.hide();
